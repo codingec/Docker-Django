@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  nginx:
+    image: nginx:1.13
+    ports:
+      - 8000:80
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - static:/opt/services/djangoapp/static
+      - media:/opt/services/djangoapp/media
+    networks:
+      - nginx_network
+
+ 
+  djangoapp:
+    build: .
+    environment:
+      - DJANGO_SETTINGS_MODULE
+    volumes:
+      - .:/opt/services/djangoapp/src
+      - static:/opt/services/djangoapp/static
+      - media:/opt/services/djangoapp/media
+    networks:
+      - nginx_network
+    depends_on:
+      - nginx
+ 
+
+networks:
+  nginx_network:
+    driver: bridge
+
+volumes:
+  static:
+  media:
